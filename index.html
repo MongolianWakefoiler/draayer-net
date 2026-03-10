@@ -474,6 +474,7 @@
       <div class="photo-tab" onclick="showCategory('arsenal', this)">⚽ Arsenal</div>
       <div class="photo-tab" onclick="showCategory('sports', this)">🏒 Live Sports</div>
       <div class="photo-tab" onclick="showCategory('olemiss', this)">🔴 Ole Miss</div>
+      <div class="photo-tab" onclick="showCategory('utah', this)">🔴 Utah Utes</div>
       <div class="photo-tab" onclick="showCategory('family', this)">👨‍👩‍👧‍👧 Family</div>
       <div class="photo-tab" onclick="showCategory('places', this)">🌍 Places</div>
     </div>
@@ -822,6 +823,46 @@
         </div>
       </div>
 
+      <!-- UTAH UTES -->
+      <div class="photo-category-label">🔴 Utah Utes · Go Utes</div>
+      <div class="photo-grid cols-4">
+        <div class="photo-cell wide tall">
+          <img src="photos/utah-ucla-01.jpg" alt="Utah fans group selfie at UCLA game, U hand signs" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>utah-ucla-01.jpg</small></div>
+          <div class="photo-label">Utah @ UCLA · the U crew</div>
+        </div>
+        <div class="photo-cell tall">
+          <img src="photos/utah-uw-01.jpg" alt="Three Utah fans at Husky Stadium" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>utah-uw-01.jpg</small></div>
+          <div class="photo-label">Husky Stadium · away day</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/utah-uw-field-01.jpg" alt="Field level shot Utah vs Washington" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>utah-uw-field-01.jpg</small></div>
+          <div class="photo-label">Husky Stadium · sideline access</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/utah-seattle-01.jpg" alt="Ryan and friends at Pike Place Market Seattle in Utah gear" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>utah-seattle-01.jpg</small></div>
+          <div class="photo-label">Pike Place Market · Utah road trip</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/utah-tailgate-01.jpg" alt="Utah fans tailgate in California parking lot" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>utah-tailgate-01.jpg</small></div>
+          <div class="photo-label">Away tailgate · Ute nation</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/utah-game-01.jpg" alt="Utah Utes game" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🔴</span><small>utah-game-01.jpg</small></div>
+          <div class="photo-label">Utah football</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/utah-game-02.jpg" alt="Utah Utes game" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🔴</span><small>utah-game-02.jpg</small></div>
+          <div class="photo-label">Utah football</div>
+        </div>
+      </div>
+
       <!-- FAMILY -->
       <div class="photo-category-label">👨‍👩‍👧‍👧 Family · The people I love most</div>
       <div class="photo-grid cols-3">
@@ -951,6 +992,7 @@
     <div class="photo-category" id="cat-arsenal"></div>
     <div class="photo-category" id="cat-sports"></div>
     <div class="photo-category" id="cat-olemiss"></div>
+    <div class="photo-category" id="cat-utah"></div>
     <div class="photo-category" id="cat-family"></div>
     <div class="photo-category" id="cat-places"></div>
 
@@ -1095,7 +1137,7 @@
     if (cat === 'all') {
       allDiv.style.display = 'block';
       // hide all individual cats
-      ['water','trails','rowing','arsenal','sports','olemiss','family','places'].forEach(function(c) {
+      ['water','trails','rowing','arsenal','sports','olemiss','utah','family','places'].forEach(function(c) {
         document.getElementById('cat-' + c).style.display = 'none';
       });
       return;
@@ -1114,7 +1156,8 @@
       rowing: '🚣',
       arsenal: '⚽',
       sports: '🏒',
-      olemiss: '🔴',
+      olemiss: '🔴 Ole Miss',
+      utah: '🔴 Utah',
       family: '👨',
       places: '🌍'
     };
