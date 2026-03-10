@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>draayer.net</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:  #0d0d0d;
+      --dark:   #111111;
+      --dark2:  #1a1a1a;
+      --dark3:  #222222;
+      --green:  #2d6a2d;
+      --green2: #3a8a3a;
+      --green3: #4caf50;
+      --gray:   #888888;
+      --border: rgba(255,255,255,0.07);
+      --text:   #f0f0f0;
+      --muted:  #888888;
+      --white:  #ffffff;
+      --win:    #4caf50;
+      --loss:   #e05252;
+      --draw:   #f59e0b;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(13,13,13,0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-wordmark { font-size: 1rem; font-weight: 800; letter-spacing: 0.04em; color: var(--white); text-decoration: none; text-transform: lowercase; }
+    .nav-wordmark span { color: var(--green3); }
+    .nav-links { display: flex; gap: 1.75rem; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--white); }
+
+    /* ── SHARED ── */
+    section { padding: 4.5rem 2rem; }
+    .inner { max-width: 1100px; margin: 0 auto; }
+    .section-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green3); margin-bottom: 0.5rem; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--white); letter-spacing: -0.03em; margin-bottom: 2rem; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 8rem 2rem 3rem; position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 60% 50% at 70% 30%, rgba(45,106,45,0.2) 0%, transparent 70%),
+                  linear-gradient(180deg, #0d0d0d 0%, #111111 100%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-headline { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; color: var(--white); letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 0.6rem; }
+    .hero-headline span { color: var(--green3); }
+    .hero-sub { font-size: 1rem; color: var(--muted); margin-bottom: 2rem; max-width: 520px; }
+    .hero-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .hero-tab {
+      padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.04em; background: var(--dark3); border: 1px solid var(--border);
+      color: var(--muted); text-decoration: none; transition: all 0.2s;
+    }
+    .hero-tab:hover, .hero-tab.active { background: var(--green); border-color: var(--green2); color: var(--white); }
+
+    /* ── CURRENTLY STRIP ── */
+    .currently { background: var(--dark); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem; }
+    .currently-strip { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; }
+    .currently-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; transition: border-color 0.2s; }
+    .currently-card:hover { border-color: var(--green2); }
+    .currently-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green3); margin-bottom: 0.25rem; }
+    .currently-title { font-size: 0.9rem; font-weight: 700; color: var(--white); margin-bottom: 0.15rem; }
+    .currently-sub { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── SPORTS GRID ── */
+    .sports { background: var(--dark); }
+    .sports-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+
+    .sport-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+    .sport-card:hover { border-color: var(--green2); transform: translateY(-2px); }
+
+    /* wide card with photo */
+    .sport-card.has-photo { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; }
+    .sport-card-photo { position: relative; overflow: hidden; min-height: 240px; }
+    .sport-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.75); transition: filter 0.3s, transform 0.4s; }
+    .sport-card:hover .sport-card-photo img { filter: brightness(0.9); transform: scale(1.03); }
+    .sport-card-photo-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      padding: 1rem; font-size: 0.65rem; color: rgba(255,255,255,0.55);
+    }
+
+    .sport-card-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .sport-name { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--white); }
+    .sport-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--green); color: var(--white); }
+    .sport-badge.neutral { background: var(--dark3); color: var(--muted); }
+    .sport-badge.live { background: #e05252; color: var(--white); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    .sport-card-body { padding: 1rem 1.25rem 1.25rem; }
+    .sport-headline { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; line-height: 1.3; }
+    .sport-detail { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .sport-link { display: inline-block; margin-top: 0.75rem; font-size: 0.75rem; font-weight: 600; color: var(--green3); text-decoration: none; }
+    .sport-link:hover { color: var(--white); }
+
+    /* result pills */
+    .results-row { display: flex; gap: 0.35rem; margin: 0.6rem 0 0.25rem; }
+    .result-pill { padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+    .result-pill.w { background: rgba(76,175,80,0.2); color: var(--win); border: 1px solid rgba(76,175,80,0.3); }
+    .result-pill.l { background: rgba(224,82,82,0.2); color: var(--loss); border: 1px solid rgba(224,82,82,0.3); }
+    .result-pill.d { background: rgba(245,158,11,0.2); color: var(--draw); border: 1px solid rgba(245,158,11,0.3); }
+
+    /* score block */
+    .score-block { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-top: 1px solid var(--border); margin-top: 0.6rem; }
+    .score-teams { font-size: 0.8rem; color: var(--muted); }
+    .score-teams strong { color: var(--white); }
+    .score-num { font-size: 1.1rem; font-weight: 900; color: var(--white); letter-spacing: 0.05em; }
+
+    /* World Cup countdown */
+    .wc-countdown { display: flex; gap: 1.25rem; margin-top: 0.75rem; }
+    .wc-unit { text-align: center; }
+    .wc-num { font-size: 1.75rem; font-weight: 900; color: var(--green3); line-height: 1; }
+    .wc-lbl { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ── PHOTO GALLERY ── */
+    .photos { background: var(--black); }
+    .photo-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .photo-tab {
+      padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; background: var(--dark3); border: 1px solid var(--border);
+      color: var(--muted); transition: all 0.2s;
+    }
+    .photo-tab:hover, .photo-tab.active { background: var(--green); border-color: var(--green2); color: var(--white); }
+
+    .photo-category { display: none; }
+    .photo-category.visible { display: block; }
+
+    .photo-category-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--green3); margin-bottom: 0.75rem;
+    }
+    .photo-grid { display: grid; gap: 4px; margin-bottom: 2rem; }
+    .photo-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .photo-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .photo-cell {
+      background: var(--dark3); border-radius: 3px; overflow: hidden;
+      position: relative; aspect-ratio: 1/1;
+    }
+    .photo-cell.tall { aspect-ratio: auto; grid-row: span 2; }
+    .photo-cell.wide { grid-column: span 2; aspect-ratio: 16/9; }
+    .photo-cell.wide.tall { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+
+    .photo-cell img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform 0.4s ease, filter 0.3s;
+      filter: brightness(0.9);
+    }
+    .photo-cell:hover img { transform: scale(1.04); filter: brightness(1); }
+
+    .photo-cell .photo-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+      padding: 1rem 0.75rem 0.6rem;
+      font-size: 0.65rem; color: rgba(255,255,255,0.6);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .photo-cell:hover .photo-label { opacity: 1; }
+
+    /* placeholder when photo missing */
+    .photo-cell .ph {
+      width: 100%; height: 100%; min-height: 160px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.4rem; opacity: 0.15;
+    }
+    .photo-cell .ph span { font-size: 1.75rem; }
+    .photo-cell .ph small { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ── STRAVA ── */
+    .strava { background: var(--dark); }
+    .strava-placeholder { background: var(--dark2); border: 1px dashed rgba(255,255,255,0.12); border-radius: 12px; padding: 2.5rem; text-align: center; color: var(--muted); }
+    .strava-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .strava-placeholder p { font-size: 0.875rem; }
+    .strava-placeholder a { color: var(--green3); text-decoration: none; }
+
+    /* ── GEAR ── */
+    .gear { background: var(--black); }
+    .gear-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+    .gear-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s, transform 0.2s; }
+    .gear-card:hover { border-color: var(--green2); transform: translateY(-1px); }
+    .gear-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+    .gear-category { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green3); margin-bottom: 0.25rem; }
+    .gear-name { font-size: 1rem; font-weight: 800; color: var(--white); margin-bottom: 0.25rem; line-height: 1.3; }
+    .gear-detail { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .gear-note { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); font-size: 0.75rem; color: var(--gray); font-style: italic; }
+
+    /* ── ORGS ── */
+    .orgs { background: var(--dark); }
+    .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .org-card { background: var(--dark2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s; }
+    .org-card:hover { border-color: var(--green2); }
+    .org-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .org-name { font-size: 1rem; font-weight: 800; color: var(--white); margin-bottom: 0.35rem; }
+    .org-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── USS BOXER ── */
+    .boxer-card {
+      grid-column: span 2;
+      display: grid; grid-template-columns: 1.4fr 1fr;
+      background: var(--dark2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .boxer-card:hover { border-color: var(--green2); transform: translateY(-2px); }
+    .boxer-photo { position: relative; overflow: hidden; min-height: 200px; }
+    .boxer-photo img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.7); transition: filter 0.3s; }
+    .boxer-card:hover .boxer-photo img { filter: brightness(0.85); }
+    .boxer-photo-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      padding: 0.75rem 1rem; font-size: 0.6rem; color: rgba(255,255,255,0.4);
+    }
+    .boxer-body { padding: 1.25rem; display: flex; flex-direction: column; justify-content: center; }
+    .boxer-eyebrow { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green3); margin-bottom: 0.5rem; }
+    .boxer-headline { font-size: 1rem; font-weight: 800; color: var(--white); margin-bottom: 0.5rem; line-height: 1.3; }
+    .boxer-detail { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark); border-top: 1px solid var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .footer-word { font-size: 0.8rem; font-weight: 800; color: var(--white); letter-spacing: 0.04em; }
+    .footer-word span { color: var(--green3); }
+    .footer-muted { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sport-card.has-photo, .boxer-card { grid-column: span 1; grid-template-columns: 1fr; }
+      .sport-card-photo, .boxer-photo { min-height: 180px; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0.875rem 1.25rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.25rem 2.5rem; }
+      section { padding: 3rem 1.25rem; }
+      .photo-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+      .photo-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+      .photo-cell.tall, .photo-cell.wide { aspect-ratio: 1/1; grid-row: span 1; grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-wordmark">draayer<span>.</span>net</a>
+  <ul class="nav-links">
+    <li><a href="#sports">Sports</a></li>
+    <li><a href="#photos">Photos</a></li>
+    <li><a href="#gear">Gear</a></li>
+    <li><a href="#strava">Activity</a></li>
+    <li><a href="#orgs">Community</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="inner hero-content">
+    <div class="hero-headline">The things<br>I <span>love.</span></div>
+    <p class="hero-sub">Water. Trails. Football. Family. The stuff that matters.</p>
+    <div class="hero-tabs">
+      <a href="#sports"  class="hero-tab active">⚽ Arsenal</a>
+      <a href="#sports"  class="hero-tab">🏈 Seahawks · AJ #30</a>
+      <a href="#sports"  class="hero-tab">🏒 Golden Knights</a>
+      <a href="#sports"  class="hero-tab">🏈 Raiders</a>
+      <a href="#sports"  class="hero-tab">🌍 World Cup 2026</a>
+      <a href="#photos"  class="hero-tab">🏄 Wake Surfing</a>
+      <a href="#photos"  class="hero-tab">🚵 Stumphouse MTB</a>
+      <a href="#photos"  class="hero-tab">🚣 Lake Keowee Rows</a>
+      <a href="#gear"    class="hero-tab">⚙️ Current Gear</a>
+    </div>
+  </div>
+</section>
+
+<!-- CURRENTLY STRIP -->
+<div class="currently">
+  <div class="currently-strip">
+    <div class="currently-card">
+      <div class="currently-eyebrow">🏄 On the foil</div>
+      <div class="currently-title">Slingshot Phantasm G-Series</div>
+      <div class="currently-sub">900 wing · 72cm carbon mast · Lake Keowee</div>
+    </div>
+    <div class="currently-card">
+      <div class="currently-eyebrow">🚵 On the trail</div>
+      <div class="currently-title">S-Works Turbo Levo</div>
+      <div class="currently-sub">Stumphouse, SC — the proving ground</div>
+    </div>
+    <div class="currently-card">
+      <div class="currently-eyebrow">🎾 On the court</div>
+      <div class="currently-title">CRBN⁴ TruFoam Waves</div>
+      <div class="currently-sub">Hybrid AeroCurve · The Cliffs Vineyards</div>
+    </div>
+    <div class="currently-card">
+      <div class="currently-eyebrow">⚽ Watching</div>
+      <div class="currently-title">Saka's back in rotation</div>
+      <div class="currently-sub">Arsenal — CL vs. Leverkusen Mar 11</div>
+    </div>
+    <div class="currently-card">
+      <div class="currently-eyebrow">🏒 Watching</div>
+      <div class="currently-title">Golden Knights</div>
+      <div class="currently-sub">Top of Pacific Division · T-Mobile Arena</div>
+    </div>
+    <div class="currently-card">
+      <div class="currently-eyebrow">⚓ Tracking</div>
+      <div class="currently-title">USS Boxer · 3rd Fleet</div>
+      <div class="currently-sub">Underway with 11th MEU</div>
+    </div>
+  </div>
+</div>
+
+<!-- SPORTS -->
+<section class="sports" id="sports">
+  <div class="inner">
+    <div class="section-label">Sports & Follows</div>
+    <h2>What's happening.</h2>
+    <div class="sports-grid">
+
+      <!-- Arsenal -->
+      <div class="sport-card has-photo">
+        <div class="sport-card-photo">
+          <img src="photos/arsenal-emirates-02.jpg" alt="Emirates Stadium" onerror="this.parentNode.innerHTML='<div class=ph><span>⚽</span><small>Arsenal at Emirates</small></div>'" />
+          <div class="sport-card-photo-caption">Emirates Stadium · London · flew here for this</div>
+        </div>
+        <div>
+          <div class="sport-card-header">
+            <span class="sport-name">⚽ Arsenal</span>
+            <span class="sport-badge">UCL · EPL</span>
+          </div>
+          <div class="sport-card-body">
+            <div class="results-row">
+              <span class="result-pill w">W</span>
+              <span class="result-pill w">W</span>
+              <span class="result-pill w">W</span>
+              <span class="result-pill w">W</span>
+              <span class="result-pill w">W</span>
+            </div>
+            <div class="score-block">
+              <div class="score-teams"><strong>Arsenal</strong> vs Chelsea</div>
+              <div class="score-num">2–1</div>
+            </div>
+            <div class="score-block">
+              <div class="score-teams"><strong>Arsenal</strong> vs Mansfield (FA Cup)</div>
+              <div class="score-num">5–0</div>
+            </div>
+            <p class="sport-detail" style="margin-top:0.75rem;">UCL Round of 16 vs Bayer Leverkusen — Mar 11 at Emirates. Saka back. Let's go.</p>
+            <a href="https://www.arsenal.com" class="sport-link" target="_blank" rel="noopener">arsenal.com →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seahawks / AJ Finley -->
+      <div class="sport-card">
+        <div class="sport-card-header">
+          <span class="sport-name">🏈 Seattle Seahawks</span>
+          <span class="sport-badge neutral">Offseason</span>
+        </div>
+        <div class="sport-card-body">
+          <div class="sport-headline">#30 AJ Finley</div>
+          <p class="sport-detail">Watching every snap. 3 games as a Seahawk so far — building on 15 as a Charger. The pride is real.</p>
+          <a href="https://www.seahawks.com" class="sport-link" target="_blank" rel="noopener">seahawks.com →</a>
+        </div>
+      </div>
+
+      <!-- Golden Knights -->
+      <div class="sport-card">
+        <div class="sport-card-header">
+          <span class="sport-name">🏒 Golden Knights</span>
+          <span class="sport-badge">Pacific Leaders</span>
+        </div>
+        <div class="sport-card-body">
+          <div class="results-row">
+            <span class="result-pill w">W</span>
+            <span class="result-pill l">L</span>
+            <span class="result-pill w">W</span>
+            <span class="result-pill w">W</span>
+          </div>
+          <div class="score-block">
+            <div class="score-teams"><strong>VGK</strong> vs Detroit</div>
+            <div class="score-num">4–3 OT</div>
+          </div>
+          <p class="sport-detail" style="margin-top:0.75rem;">T-Mobile Arena. Was there for the Cup. Will always be there.</p>
+        </div>
+      </div>
+
+      <!-- Raiders -->
+      <div class="sport-card">
+        <div class="sport-card-header">
+          <span class="sport-name">🏈 Las Vegas Raiders</span>
+          <span class="sport-badge neutral">Rebuild Mode</span>
+        </div>
+        <div class="sport-card-body">
+          <div class="sport-headline">New era at Allegiant</div>
+          <p class="sport-detail">#1 overall pick. New coach Klint Kubiak. Trading Maxx Crosby. This is a real teardown — and I'm here for it.</p>
+          <a href="https://www.raiders.com" class="sport-link" target="_blank" rel="noopener">raiders.com →</a>
+        </div>
+      </div>
+
+      <!-- USMNT / World Cup -->
+      <div class="sport-card">
+        <div class="sport-card-header">
+          <span class="sport-name">🌍 USMNT · World Cup 2026</span>
+          <span class="sport-badge">Tickets ✓</span>
+        </div>
+        <div class="sport-card-body">
+          <div class="sport-headline">USA vs. Australia</div>
+          <p class="sport-detail">Seattle · June 19, 2026 · Tickets in hand.</p>
+          <div class="wc-countdown" id="wc-countdown">
+            <div class="wc-unit"><div class="wc-num" id="wc-d">—</div><div class="wc-lbl">Days</div></div>
+            <div class="wc-unit"><div class="wc-num" id="wc-h">—</div><div class="wc-lbl">Hrs</div></div>
+            <div class="wc-unit"><div class="wc-num" id="wc-m">—</div><div class="wc-lbl">Min</div></div>
+            <div class="wc-unit"><div class="wc-num" id="wc-s">—</div><div class="wc-lbl">Sec</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ole Miss / Utah -->
+      <div class="sport-card">
+        <div class="sport-card-header">
+          <span class="sport-name">🏈 College Football</span>
+          <span class="sport-badge neutral">Offseason</span>
+        </div>
+        <div class="sport-card-body">
+          <div class="sport-headline">Ole Miss Rebels · Utah Utes</div>
+          <p class="sport-detail">Two schools, two loyalties. SEC Saturdays and Pac-12 loyalty — the schedule fills itself.</p>
+        </div>
+      </div>
+
+      <!-- USS Boxer -->
+      <div class="boxer-card" style="grid-column: span 2;">
+        <div class="boxer-photo">
+          <img src="https://d1ldvf68ux039x.cloudfront.net/thumbs/photos/2603/9547059/1000w_q95.jpg" alt="USS Boxer" />
+          <div class="boxer-photo-label">USS Boxer (LHD-4) · DVIDS / US Navy · Public Domain</div>
+        </div>
+        <div class="boxer-body">
+          <div class="boxer-eyebrow">⚓ Following · 3rd Fleet</div>
+          <div class="boxer-headline">USS Boxer · LHD-4</div>
+          <p class="boxer-detail">Amphibious assault ship operating with the 11th Marine Expeditionary Unit. 40,000 tons of American presence. I find tracking naval deployments genuinely fascinating — the logistics alone are staggering.</p>
+        </div>
+      </div>
+
+    </div><!-- end sports-grid -->
+  </div>
+</section>
+
+<!-- PHOTOS -->
+<section class="photos" id="photos">
+  <div class="inner">
+    <div class="section-label">Photos</div>
+    <h2>Out there.</h2>
+
+    <div class="photo-tabs">
+      <div class="photo-tab active" onclick="showCategory('all', this)">All</div>
+      <div class="photo-tab" onclick="showCategory('water', this)">🌊 Water</div>
+      <div class="photo-tab" onclick="showCategory('trails', this)">🚵 Trails</div>
+      <div class="photo-tab" onclick="showCategory('rowing', this)">🚣 Rowing</div>
+      <div class="photo-tab" onclick="showCategory('arsenal', this)">⚽ Arsenal</div>
+      <div class="photo-tab" onclick="showCategory('sports', this)">🏒 Live Sports</div>
+    </div>
+
+    <!-- WATER -->
+    <div class="photo-category visible" id="cat-all">
+
+      <div class="photo-category-label" id="cat-all-lbl" style="display:none;">All</div>
+
+      <div class="photo-category-label">🌊 Wake Surfing · Lake Keowee &amp; Qatar</div>
+      <div class="photo-grid cols-4" style="margin-bottom:2rem;">
+        <div class="photo-cell tall wide">
+          <img src="photos/wake-keowee-01.jpg" alt="Wake surfing Lake Keowee fall foliage" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-keowee-01.jpg</small></div>
+          <div class="photo-label">Lake Keowee · Fall</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/wake-keowee-02.jpg" alt="Wake surfing balanced on wave" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-keowee-02.jpg</small></div>
+          <div class="photo-label">Lake Keowee · riding the pocket</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/wake-keowee-03.jpg" alt="Wake surfing overcast day" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-keowee-03.jpg</small></div>
+          <div class="photo-label">Lake Keowee · overcast glass</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/wake-qatar-01.jpg" alt="Wake surfing in Qatar thumbs up" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-qatar-01.jpg</small></div>
+          <div class="photo-label">Doha, Qatar · Wake Qatar</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/wake-qatar-02.jpg" alt="Wake surfing in Qatar smiling" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-qatar-02.jpg</small></div>
+          <div class="photo-label">Doha, Qatar</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/wake-qatar-03.jpg" alt="Wake surfing Qatar with instructor city skyline" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏄</span><small>wake-qatar-03.jpg</small></div>
+          <div class="photo-label">Wake Qatar · city skyline behind</div>
+        </div>
+      </div>
+
+      <!-- ROWING -->
+      <div class="photo-category-label">🚣 Rowing · Lake Keowee</div>
+      <div class="photo-grid cols-3" style="margin-bottom:2rem;">
+        <div class="photo-cell wide tall">
+          <img src="photos/rowing-01.jpg" alt="POV rowing on Lake Keowee at dawn" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚣</span><small>rowing-01.jpg</small></div>
+          <div class="photo-label">Lake Keowee · dawn row · the mist is everything</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/rowing-02.jpg" alt="Ryan rowing on Lake Keowee" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚣</span><small>rowing-02.jpg</small></div>
+          <div class="photo-label">Lake Keowee · solo scull</div>
+        </div>
+      </div>
+
+      <!-- TRAILS -->
+      <div class="photo-category-label">🚵 MTB · Stumphouse SC, Red Rock NV &amp; more</div>
+      <div class="photo-grid cols-4" style="margin-bottom:2rem;">
+        <div class="photo-cell wide">
+          <img src="photos/mtb-stumphouse-01.jpg" alt="MTB river selfie Stumphouse SC" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-stumphouse-01.jpg</small></div>
+          <div class="photo-label">Stumphouse · SC · river overlook</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-stumphouse-02.jpg" alt="MTB waterfall fall foliage" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-stumphouse-02.jpg</small></div>
+          <div class="photo-label">Stumphouse · waterfall behind</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-stumphouse-03.jpg" alt="MTB fall foliage Specialized" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-stumphouse-03.jpg</small></div>
+          <div class="photo-label">Stumphouse · fall colors</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/mtb-desert-01.jpg" alt="MTB Vegas desert ride" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-desert-01.jpg</small></div>
+          <div class="photo-label">Henderson, NV · desert ride at dawn</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-redrock-01.jpg" alt="Cottonwood Valley Road Red Rock cycling" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-redrock-01.jpg</small></div>
+          <div class="photo-label">Red Rock · Cottonwood Valley Road</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-group-01.jpg" alt="Group ride SC trails" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-group-01.jpg</small></div>
+          <div class="photo-label">SC trails · crew ride</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-couple-01.jpg" alt="Couple MTB green forest" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-couple-01.jpg</small></div>
+          <div class="photo-label">SC trails · with Mandi</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-winter-01.jpg" alt="Couple with S-Works winter woods" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-winter-01.jpg</small></div>
+          <div class="photo-label">SC trails · winter ride</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/road-cycling-01.jpg" alt="Road cycling red helmet action shot" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚴</span><small>road-cycling-01.jpg</small></div>
+          <div class="photo-label">Road · somewhere beautiful</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-solo-01.jpg" alt="Solo trail ride chainsaw on helmet" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-solo-01.jpg</small></div>
+          <div class="photo-label">Trail crew day · earned it</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/mtb-lake-01.jpg" alt="Two guys with bikes by lake" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🚵</span><small>mtb-lake-01.jpg</small></div>
+          <div class="photo-label">SC lakeside ride</div>
+        </div>
+      </div>
+
+      <!-- ARSENAL LIVE -->
+      <div class="photo-category-label">⚽ Arsenal · Emirates &amp; Etihad</div>
+      <div class="photo-grid cols-4" style="margin-bottom:2rem;">
+        <div class="photo-cell wide tall">
+          <img src="photos/arsenal-emirates-02.jpg" alt="Group outside Emirates Stadium" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-emirates-02.jpg</small></div>
+          <div class="photo-label">Emirates Stadium · London</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/arsenal-emirates-01.jpg" alt="Group inside Emirates red beanies" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-emirates-01.jpg</small></div>
+          <div class="photo-label">Inside Emirates · matchday red</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/arsenal-store-01.jpg" alt="At Arsenal team store" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-store-01.jpg</small></div>
+          <div class="photo-label">Arsenal team store · kit drop</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/arsenal-crowd-01.jpg" alt="Pre-match crowd outside Arsenal" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-crowd-01.jpg</small></div>
+          <div class="photo-label">Pre-match · the streets are alive</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/arsenal-etihad-01.jpg" alt="Arsenal players at Etihad away kit" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-etihad-01.jpg</small></div>
+          <div class="photo-label">Etihad Stadium · Arsenal away · pitch level</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/arsenal-etihad-02.jpg" alt="At Etihad watching Arsenal" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>⚽</span><small>arsenal-etihad-02.jpg</small></div>
+          <div class="photo-label">Etihad · away end</div>
+        </div>
+      </div>
+
+      <!-- LIVE SPORTS -->
+      <div class="photo-category-label">🏒 Live Sports · Raiders · Knights</div>
+      <div class="photo-grid cols-4">
+        <div class="photo-cell wide tall">
+          <img src="photos/raiders-01.jpg" alt="Raiders game Allegiant Stadium group" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>raiders-01.jpg</small></div>
+          <div class="photo-label">Allegiant Stadium · Raiders crew</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/raiders-02.jpg" alt="Raiders game selfie" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>raiders-02.jpg</small></div>
+          <div class="photo-label">Allegiant · game day</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/raiders-03.jpg" alt="Raiders tailgate" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏈</span><small>raiders-03.jpg</small></div>
+          <div class="photo-label">Tailgate season</div>
+        </div>
+        <div class="photo-cell wide">
+          <img src="photos/knights-cup-01.jpg" alt="Golden Knights Stanley Cup celebration" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏒</span><small>knights-cup-01.jpg</small></div>
+          <div class="photo-label">Golden Knights · Stanley Cup · I was there</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/knights-game-01.jpg" alt="Knights playoff game crew" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏒</span><small>knights-game-01.jpg</small></div>
+          <div class="photo-label">T-Mobile Arena · playoffs</div>
+        </div>
+        <div class="photo-cell">
+          <img src="photos/knights-family-01.jpg" alt="Family at Knights game" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+          <div class="ph" style="display:none;"><span>🏒</span><small>knights-family-01.jpg</small></div>
+          <div class="photo-label">T-Mobile · with the family</div>
+        </div>
+      </div>
+
+    </div><!-- end cat-all -->
+
+    <!-- Individual filtered categories (hidden by default, shown on tab click) -->
+    <div class="photo-category" id="cat-water"></div>
+    <div class="photo-category" id="cat-trails"></div>
+    <div class="photo-category" id="cat-rowing"></div>
+    <div class="photo-category" id="cat-arsenal"></div>
+    <div class="photo-category" id="cat-sports"></div>
+
+  </div>
+</section>
+
+<!-- STRAVA -->
+<section class="strava" id="strava">
+  <div class="inner">
+    <div class="section-label">Activity</div>
+    <h2>Recent moves.</h2>
+    <div class="strava-placeholder">
+      <div class="strava-icon">🟠</div>
+      <p>Strava integration coming soon — rows, rides, and foil sessions.<br/>
+      <a href="https://www.strava.com" target="_blank" rel="noopener">Follow on Strava →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- GEAR -->
+<section class="gear" id="gear">
+  <div class="inner">
+    <div class="section-label">Current Setup</div>
+    <h2>What's in the quiver.</h2>
+    <div class="gear-grid">
+
+      <div class="gear-card">
+        <div class="gear-icon">🏄</div>
+        <div class="gear-category">Wakefoil</div>
+        <div class="gear-name">Slingshot Phantasm G-Series</div>
+        <div class="gear-detail">900 Front Wing · 710 Fuse · 72cm Carbon Mast</div>
+        <div class="gear-note">2024 Hope Craft V2 120cm board. Lake Keowee has my heart right now.</div>
+      </div>
+
+      <div class="gear-card">
+        <div class="gear-icon">🚵</div>
+        <div class="gear-category">E-MTB</div>
+        <div class="gear-name">S-Works Turbo Levo</div>
+        <div class="gear-detail">Specialized's flagship trail slayer. Full suspension, full send.</div>
+        <div class="gear-note">Home trail: Stumphouse, SC — where I bloody and bruise the uninitiated.</div>
+      </div>
+
+      <div class="gear-card">
+        <div class="gear-icon">🎾</div>
+        <div class="gear-category">Pickleball</div>
+        <div class="gear-name">CRBN⁴ TruFoam Waves</div>
+        <div class="gear-detail">Hybrid shape · AeroCurve · Toray T700 Carbon Fiber · 100% Foam Core</div>
+        <div class="gear-note">Home court: The Cliffs Vineyards, SC with the crew.</div>
+      </div>
+
+      <div class="gear-card">
+        <div class="gear-icon">⚡</div>
+        <div class="gear-category">E-Foil</div>
+        <div class="gear-name">Electric Foil Board</div>
+        <div class="gear-detail">When you want to fly without the boat. Lake Mead &amp; Lake Keowee.</div>
+        <div class="gear-note">The learning curve is vertical. Worth every wipeout.</div>
+      </div>
+
+      <div class="gear-card">
+        <div class="gear-icon">🚣</div>
+        <div class="gear-category">Rowing</div>
+        <div class="gear-name">Single Scull</div>
+        <div class="gear-detail">Empacher oars · Lake Keowee · best way to start a morning.</div>
+        <div class="gear-note">Nothing quieter than glass water at 6am.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ORGS -->
+<section class="orgs" id="orgs">
+  <div class="inner">
+    <div class="section-label">Community</div>
+    <h2>What I give to.</h2>
+    <div class="orgs-grid">
+
+      <div class="org-card">
+        <div class="org-icon">⛪</div>
+        <div class="org-name">LDS Church</div>
+        <div class="org-desc">Faith and family woven through everything. The foundation, not a footnote.</div>
+      </div>
+
+      <div class="org-card">
+        <div class="org-icon">🫱</div>
+        <div class="org-name">Salvation Army</div>
+        <div class="org-desc">Doing the unglamorous work. Showing up where it matters, when it matters.</div>
+      </div>
+
+      <div class="org-card">
+        <div class="org-icon">🤝</div>
+        <div class="org-name">Vistage</div>
+        <div class="org-desc">A room full of people who've earned the right to tell you hard truths. Invaluable.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-word">draayer<span>.</span>net</div>
+  <div class="footer-muted">The things I love, not the résumé.</div>
+</footer>
+
+<script>
+  // ── World Cup countdown ──
+  (function() {
+    var target = new Date('2026-06-19T19:00:00-07:00');
+    function tick() {
+      var now = new Date();
+      var diff = target - now;
+      if (diff <= 0) {
+        document.getElementById('wc-d').textContent = '0';
+        document.getElementById('wc-h').textContent = '0';
+        document.getElementById('wc-m').textContent = '0';
+        document.getElementById('wc-s').textContent = '0';
+        return;
+      }
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('wc-d').textContent = d;
+      document.getElementById('wc-h').textContent = h;
+      document.getElementById('wc-m').textContent = m;
+      document.getElementById('wc-s').textContent = s;
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+
+  // ── Photo tab filter ──
+  function showCategory(cat, el) {
+    // Update tab styling
+    document.querySelectorAll('.photo-tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+
+    // Show/hide: "all" shows the main cat-all div (which has all sub-sections)
+    var allDiv = document.getElementById('cat-all');
+
+    if (cat === 'all') {
+      allDiv.style.display = 'block';
+      // hide all individual cats
+      ['water','trails','rowing','arsenal','sports'].forEach(function(c) {
+        document.getElementById('cat-' + c).style.display = 'none';
+      });
+      return;
+    }
+
+    // Hide main all view, show only requested section
+    allDiv.style.display = 'none';
+
+    // Map cat to section IDs within cat-all — we'll clone/move content
+    // Simpler: just scroll to relevant section label in cat-all
+    // Actually, let's just show cat-all but scroll. Re-show all and scroll.
+    allDiv.style.display = 'block';
+    var labels = {
+      water: '🌊',
+      trails: '🚵',
+      rowing: '🚣',
+      arsenal: '⚽',
+      sports: '🏒'
+    };
+    var emoji = labels[cat];
+    var labelEls = document.querySelectorAll('.photo-category-label');
+    labelEls.forEach(function(lbl) {
+      if (lbl.textContent.startsWith(emoji)) {
+        lbl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+</script>
+
+<!--
+==============================================
+  PHOTO UPLOAD GUIDE
+  Add these files to the /photos/ folder in GitHub:
+
+  WAKE SURFING (you sent these inline):
+    wake-keowee-01.jpg  — Lake Keowee fall foliage, smiling, O'Neill vest
+    wake-keowee-02.jpg  — Lake Keowee, riding the pocket, arms out
+    wake-keowee-03.jpg  — Lake Keowee overcast day, dark board
+    wake-qatar-01.jpg   — Doha Qatar skyline, black vest, double thumbs up
+    wake-qatar-02.jpg   — Doha Qatar, smiling
+    wake-qatar-03.jpg   — Wake Qatar instructor on boat deck, city behind
+
+  ROWING (you sent these):
+    rowing-01.jpg       — POV from scull looking out over misty Lake Keowee at dawn
+    rowing-02.jpg       — Drone/boat shot of Ryan rowing on Lake Keowee, yellow shirt
+
+  MTB / CYCLING (you sent these):
+    mtb-stumphouse-01.jpg  — River selfie, 3 people, SC, GoPros on helmets
+    mtb-stumphouse-02.jpg  — 2 guys yellow shirts, waterfall/fall foliage background
+    mtb-stumphouse-03.jpg  — 2 guys, Specialized bike visible, fall foliage
+    mtb-desert-01.jpg      — Batman jersey selfie, Vegas valley backdrop, dawn
+    mtb-redrock-01.jpg     — Cottonwood Valley Road sign, Red Rock Canyon
+    mtb-group-01.jpg       — Group of 4 on SC trail (2 guys, 2 women)
+    mtb-couple-01.jpg      — Couple selfie, green forest summer trail, bikes in bg
+    mtb-winter-01.jpg      — Couple standing with S-Works, bare winter woods
+    mtb-solo-01.jpg        — Solo selfie, yellow shirt, chainsaw on helmet, fallen trees
+    mtb-lake-01.jpg        — 2 guys with bikes by lake (Santa Cruz + Specialized)
+    mtb-bench-01.jpg       — Two people at trail bench, green summer woods
+    mtb-trail-01.jpg       — Two on trail, one giving thumbs up, winter woods
+    road-cycling-01.jpg    — Red Specialized helmet, white jersey, road action shot
+
+  ARSENAL (you sent these):
+    arsenal-emirates-01.jpg  — 4 guys INSIDE Emirates, red beanies, matchday
+    arsenal-emirates-02.jpg  — 4 guys OUTSIDE Emirates Stadium facade (best shot!)
+    arsenal-store-01.jpg     — 2 guys at Arsenal team store with merchandise bag
+    arsenal-crowd-01.jpg     — Nighttime crowd selfie outside stadium
+    arsenal-etihad-01.jpg    — Arsenal players in gold/yellow away kit at Etihad
+    arsenal-etihad-02.jpg    — Young woman at Etihad watching Arsenal (Sophie/Ruby?)
+
+  RAIDERS (extracted from original HEIC — already in folder):
+    raiders-01.jpg           — Group selfie at Allegiant Stadium ✓ ALREADY UPLOADED
+
+  GOLDEN KNIGHTS (from original HEIC batch — save from your Photos app):
+    knights-cup-01.jpg    — Stanley Cup celebration photo
+    knights-game-01.jpg   — Playoff game crew photo, "What a knight!" signs
+    knights-family-01.jpg — Family at T-Mobile Arena (Mandi + daughters)
+    + any other Raiders/Knights game photos you want to add as raiders-02.jpg, etc.
+==============================================
+-->
+
+</body>
+</html>
